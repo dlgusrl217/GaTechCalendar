@@ -13,6 +13,7 @@ Vue.use(require('vue-mdc-adapter/dist/textfield/textfield.min.js'));
 import 'vue-mdc-adapter/dist/button/button.min.css';
 Vue.use(require('vue-mdc-adapter/dist/button/button.min.js'));
 import 'vue-mdc-adapter/dist/select/select.min.css';
+import { pullOne } from '../node_modules/ambients-utils';
 Vue.use(require('vue-mdc-adapter/dist/select/select.min.js'));
 
 rinss.config({
@@ -21,8 +22,10 @@ rinss.config({
     globalOverflowX: 'hidden'
 });
 
-const departments = ['OIE', 'SCPC', 'C2D2', 'This is a long ass department name'];
+const departments = ['OIE', 'SCPC', 'C2D2'];
 const events = [];
+const addIcon = require('./icons/add.svg');
+const deleteIcon = require('./icons/delete.svg')
 
 class CalendarEvent {
     public title:string;
@@ -53,10 +56,10 @@ Vue.component('MaterialDatePicker', {
     },
     template: `
         <div style="${ rss({ position: 'relative' }) }">
-            <mdc-textfield label="Date" :value="date.time" style="${ rss({ width: '100%' }) }"/>
+            <mdc-textfield :label="dateTitle" :value="date.time" style="${ rss({ width: '100%' }) }"/>
             <DatePicker :date="date" :option="option" style="${ rss({
                 absLeft: 0,
-                absTop: 15,
+                absTop: 18,
                 width: '100%'
             }) }"/>
         </div>
@@ -96,7 +99,10 @@ Vue.component('MaterialDatePicker', {
         'date.time'(val) {
             this.$emit('input', val);
         }
-    }
+    },
+    props:{
+        dateTitle:String,
+    },
 });
 
 Vue.component('AdminPanel', {
@@ -104,8 +110,8 @@ Vue.component('AdminPanel', {
         <div style="${ rss({ width: '100%', padding: 20, background: 'rgb(238, 238, 238)' }) }">
             <h4>Add event</h4>
             <mdc-textfield label="Event" v-model="eventName" style="${ rss({ width: '100%' }) }"/>
-            <MaterialDatePicker v-model="startDate"/>
-            <MaterialDatePicker v-model="endDate"/>
+            <MaterialDatePicker dateTitle="Start Date" v-model="startDate"/>
+            <MaterialDatePicker dateTitle="End Date" v-model="endDate"/>
             <mdc-textfield label="Time" value="" style="${ rss({ width: '100%' }) }"/>
             <mdc-textfield label="Location" value="" style="${ rss({ width: '100%' }) }"/>
             <mdc-select label="Department" style="${ rss({ width: '100%' }) }">
@@ -130,6 +136,70 @@ Vue.component('AdminPanel', {
     }
 });
 
+Vue.component('AddDepartmentPanel', {
+    template:`
+        <div style="${ rss({
+            width: '100%',
+            background: 'rgb(238,238,238)',
+            padding: 20,
+            marginTop: 20,
+        })}">
+            <h4>Add department</h4>
+            <div v-for="name of departments" style="${rss({
+                width:'100%',
+                floatTop:10,
+            })}">
+                <div style="${rss({
+                    width:20,
+                    height:20,
+                    color:'gray',
+                    floatLeft:0,
+                })}" @click="deleteDepartment(name)">${deleteIcon}
+                </div>
+                <div style="${rss({
+                    floatLeft:10,
+                })}">{{ name }}</div>
+                
+            </div>
+            <div style="${rss({
+                width:'100%',
+                floatTop:10,
+            })}">
+                <div style="${rss({
+                    width:20,
+                    height:20,
+                    color:'gray',
+                    floatLeft:0
+                })}" @click="saveDepartment">${addIcon}
+                </div>
+                <input ref="departmentName" placeholder="Add department" @keydown="checkEnter" style="${rss({
+                    floatLeft:10,
+                    border:'none',
+                    background:'none'
+                })}"/>
+            </div>
+        </div>
+    `,
+    props:{
+        departments:Array,
+    },
+    methods:{
+        checkEnter(event:KeyboardEvent) {
+            if (event.code === 'Enter') {
+                (this as any).departments.push((this.$refs.departmentName as HTMLInputElement).value);
+                (this.$refs.departmentName as HTMLInputElement).value = '';
+            }
+        },
+        deleteDepartment(name){
+            pullOne((this as any).departments, name);
+        },
+        saveDepartment(){
+            (this as any).departments.push((this.$refs.departmentName as HTMLInputElement).value);
+            (this.$refs.departmentName as HTMLInputElement).value = '';
+        }
+    }
+})
+
 new Vue({
     el: '#app',
     template:`
@@ -137,6 +207,7 @@ new Vue({
             width: '100vw',
             maxWidth: 1200,
             height: '100vh',
+            overflow: 'hidden',
             centerX: true,
         }) }">
             <div style="${rss({
@@ -150,6 +221,8 @@ new Vue({
                 height: '100%',
                 width: '30%',
                 floatLeft:0,
+                overflowY: 'scroll',
+                overflowX: 'hidden',
             })}">
                 <div style="${ rss({
                     width: '100%',
@@ -161,6 +234,7 @@ new Vue({
                     <MaterialCheckbox v-for="name of departments" :label="name"/>
                 </div>
                 <AdminPanel style="${ rss({ marginTop: 20 }) }"/>
+                <AddDepartmentPanel :departments="departments"/>
             </div>
         </div>
     `,

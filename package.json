@@ -1,21 +1,19 @@
 {
   "dependencies": {
-    "ambients-math": "^1.0.9",
+    "ambients-math": "^1.1.0",
     "ambients-utils": "^1.4.2",
-    "eventss": "^1.3.1",
+    "eventss": "^1.3.2",
     "hammerjs": "*",
     "normalize.css": "*",
-    "rinss": "^1.7.0",
+    "rinss": "^1.7.3",
     "vue": "*",
+    "vue-datepicker2": "*",
     "vue-fullcalendar": "*",
-    "vue-mdc-adapter": "*",
-    "vue-datepicker2": "*"
+    "vue-mdc-adapter": "*"
   },
   "devDependencies": {
     "@types/hammerjs": "*",
-    "@types/node": "^10.5.2",
-    "vue-template-compiler": "*",
-    "vue-loader": "*",
+    "@types/node": "^10.5.3",
     "css-loader": "^1.0.0",
     "file-loader": "*",
     "html-webpack-plugin": "*",
@@ -24,6 +22,8 @@
     "svg-inline-loader": "*",
     "ts-loader": "^4.4.2",
     "typescript": "^2.9.2",
+    "vue-loader": "*",
+    "vue-template-compiler": "*",
     "webpack": "^4.16.2",
     "webpack-cli": "^2.1.5",
     "webpack-dev-server": "^3.1.5"
